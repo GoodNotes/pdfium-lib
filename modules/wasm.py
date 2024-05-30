@@ -593,6 +593,8 @@ def run_task_test():
                 "ASSERTIONS=1",
                 "-s",
                 "ALLOW_MEMORY_GROWTH=1",
+                "-s",
+                "WASMFS=1",
                 "--embed-file",
                 "assets/web-assembly.pdf",
             ]
