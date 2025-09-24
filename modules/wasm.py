@@ -634,7 +634,9 @@ def run_task_generate():
                 "-s",
                 f"EXPORTED_FUNCTIONS={complete_functions_list}",
                 "-s",
-                'EXPORTED_RUNTIME_METHODS=\'["ccall", "cwrap", "wasmExports"]\'',
+                'EXPORTED_RUNTIME_METHODS=\'["ccall", "cwrap", "wasmExports", "addFunction", "removeFunction", "setValue"]\'',
+                "-s",
+                "ALLOW_TABLE_GROWTH=1",
                 "custom.cpp",
                 lib_file_out,
                 "-I{0}".format(include_dir),
@@ -660,10 +662,10 @@ def run_task_generate():
                 *base_command,
                 "-o",
                 os.path.join(gen_out_dir, "pdfium.js"),
- 
+
             ]
             r.run(" ".join(umd_command), cwd=gen_utils_dir, shell=True)
-            
+
             # Generate ES6 module, only .js will be generated (no .wasm)
             l.colored("Compiling ES6 module with emscripten...", l.YELLOW)
             es6_command = [
