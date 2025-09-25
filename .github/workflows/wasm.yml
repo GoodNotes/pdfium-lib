@@ -107,6 +107,12 @@ jobs:
           name: artifact-${{ matrix.config.target }}
           path: ${{ matrix.config.target }}.tgz
 
+      - name: Save per-config package (release)
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.config.target }}-release
+          path: ${{ matrix.config.target }}-release.tgz
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
@@ -117,6 +123,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: artifact-wasm
+      - name: Load per-config package (release)
+        uses: actions/download-artifact@v4
+        with:
+          name: artifact-wasm-release
       - name: Get release
         id: get_release
         uses: bruceadams/get-release@v1.2.2
@@ -131,4 +141,13 @@ jobs:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
           asset_path: wasm.tgz
           asset_name: wasm.tgz
+          asset_content_type: application/tar+gzip
+      - name: Upload per-config package (release)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: wasm-release.tgz
+          asset_name: wasm-release.tgz
           asset_content_type: application/tar+gzip

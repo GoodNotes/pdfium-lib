@@ -645,6 +645,11 @@ def run_task_generate():
                 os.path.join(node_dir, "index.html"),
             )
 
+            f.copy_file(
+                os.path.join(template_dir, "package.json"),
+                os.path.join(main_dir, "package.json"),
+            )
+
             # change template tags
             l.colored("Replacing template tags...", l.YELLOW)
 
@@ -652,6 +657,12 @@ def run_task_generate():
                 os.path.join(node_dir, "index.html"),
                 "{pdfium-branch}",
                 c.pdfium_git_branch,
+            )
+
+            f.replace_in_file(
+                os.path.join(main_dir, "package.json"),
+                "{pdfium-branch-version}",
+                c.pdfium_git_branch.strip("chromium/"),
             )
 
             # test
@@ -748,13 +759,25 @@ def run_task_archive():
                 current_dir, "build", target["target_os"], target["target_cpu"], config
             )
 
+            filter_files = lambda x: (
+                None if "_" in x.name and not x.name.endswith(".h") else x
+            )
+
             tar.add(
                 name=lib_dir,
                 arcname=os.path.basename(lib_dir),
-                filter=lambda x: (
-                    None if "_" in x.name and not x.name.endswith(".h") else x
-                ),
+                filter=filter_files,
             )
+
+            # Create per config "npm install"-compatible tarball
+            per_config_tar = tarfile.open(os.path.join(current_dir, f"wasm-{config}.tgz"), "w:gz")
+            per_config_tar.add(
+                name=lib_dir,
+                # Use "package" as the root directory to be compatible with "npm install"
+                arcname="package",
+                filter=filter_files,
+            )
+            per_config_tar.close()
 
     tar.close()
 
