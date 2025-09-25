@@ -48,20 +48,3 @@ def apply_public_headers(target):
         l.bullet("Applied: public headers (p2)", l.GREEN)
     else:
         l.bullet("Skipped: public headers (p2)", l.PURPLE)
-
-
-# -----------------------------------------------------------------------------
-def apply_es6_bundler_fix(js_path):
-    l.colored("Applying: ES6 bundler fix...", l.YELLOW)
-    original_content = 'scriptDirectory=require("url").fileURLToPath(new URL("./",import.meta.url));'
-    has_content = f.file_has_content(js_path, original_content)
-
-    if not has_content:
-        l.e("Failed to apply: ES6 bundler fix", True)
-
-    f.replace_in_file(
-        js_path,
-        original_content,
-        'scriptDirectory = __dirname + "/";'
-    )
-    l.colored("Applied: ES6 bundler fix", l.GREEN)

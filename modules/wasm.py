@@ -668,20 +668,14 @@ def run_task_generate():
 
             # Generate ES6 module, only .js will be generated (no .wasm)
             l.colored("Compiling ES6 module with emscripten...", l.YELLOW)
-            es6_js_path = os.path.join(gen_out_dir, "pdfium.esm.js")
             es6_command = [
                 *base_command,
                 "-s"
                 "EXPORT_ES6=1",
                 "-o",
-                es6_js_path,
+                os.path.join(gen_out_dir, "pdfium.esm.js"),
             ]
             r.run(" ".join(es6_command), cwd=gen_utils_dir, shell=True)
-
-            # XXX: patch es6 module to be compatible with vitest
-            # We should remove this once we upgrade Emscripten to a version including https://github.com/emscripten-core/emscripten/pull/22605
-            l.colored("Patching ES6 module...", l.YELLOW)
-            patch.apply_es6_bundler_fix(es6_js_path)
 
             # copy files
             l.colored("Copying compiled files...", l.YELLOW)
