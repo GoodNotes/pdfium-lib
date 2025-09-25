@@ -102,6 +102,12 @@ jobs:
           name: artifact-${{ matrix.config.target }}
           path: ${{ matrix.config.target }}.tgz
 
+      - name: Save per-config package (release)
+        uses: actions/upload-artifact@v4
+        with:
+          name: artifact-${{ matrix.config.target }}-release
+          path: ${{ matrix.config.target }}-release.tgz
+
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
